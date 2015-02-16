@@ -186,6 +186,7 @@ $(function() {
             numBall.lifeTime -= INTERVAL_TIME
             //如果是误按
             if(hitKey != ''){
+                numBall.setColor('bgcolor',[204,51,102,1]);
                 miss += 1;
             }
             //如果小球阳寿已尽。。。
