@@ -51,11 +51,14 @@ $(function() {
     var success = 0;
     var fail = 0;
     var miss = 0;
-    var pause = false;
+    var pause;
     var $success = $('.success');
     var $fail = $('.fail');
     var $miss = $('.miss');
     var $exerciseType = $('.exercise-type');
+
+    var context = document.getElementById('canvas').getContext('2d');
+    var numBall;
 
     var NumBall = function() {
         this.status = 1;
@@ -109,9 +112,7 @@ $(function() {
      * 真正干活的区域
      *     画小球
      */
-    var context = document.getElementById('canvas').getContext('2d');
-    // var numBallArr = [];
-    var numBall = new NumBall();
+    
 
     var drawNumBall = function(numBall, context) {
         //画圆
@@ -158,7 +159,9 @@ $(function() {
         success = 0;
         fail = 0;
         miss = 0;
+        pause = false;
         LIBRARY_CONFIG = $exerciseType.val();
+        numBall = new NumBall();
         context.clearRect(0, 0, 800, 800);
         drawNumBall(numBall, context);
         keyObj.getHitKey();
