@@ -146,10 +146,12 @@ $(function() {
     var pause = false;
     var $success = $('.success');
     var $fail = $('.fail');
+    var $exerciseType = $('.exercise-type');
 
-    var start = function(numBall, context) {
+    var start = function() {
         success = 0;
         fail = 0;
+        LIBRARY_CONFIG = $exerciseType.val();
         context.clearRect(0, 0, 800, 800);
         drawNumBall(numBall, context);
         keyObj.getHitKey();
@@ -247,6 +249,7 @@ $(function() {
 
     //暂停
     $('.pause').on('click', function(){
+        pause = !pause;
         if(pause){
             loop();
         }
@@ -254,9 +257,6 @@ $(function() {
             clearTimeout(loopId);
         }
     });
-
-
-    // start(numBall, context);
 
 
 });
