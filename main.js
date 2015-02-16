@@ -45,6 +45,18 @@ $(function() {
     var CANVAS_WIDTH = 800;
     var CANVAS_HEIGHT = 800;
 
+
+    var ALIVE = true;
+    var loopId;
+    var success = 0;
+    var fail = 0;
+    var miss = 0;
+    var pause = false;
+    var $success = $('.success');
+    var $fail = $('.fail');
+    var $miss = $('.miss');
+    var $exerciseType = $('.exercise-type');
+
     var NumBall = function() {
         this.status = 1;
         this.lifeTime = GenNum.decimal(BASE_LIFE_TIME, LONGEST_LIFE_TIME, 1);
@@ -131,6 +143,7 @@ $(function() {
         console.log(numBall.libraryIndex);
 
         function genFontColor(){
+            //小写字母用别的颜色
             if(numBall.label>= 'a' && numBall.label<= 'z'){
                 numBall.setColor('fontcolor',[204,51,255,1]);
             }
@@ -139,18 +152,12 @@ $(function() {
 
     }
 
-    var ALIVE = true;
-    var loopId;
-    var success = 0;
-    var fail = 0;
-    var pause = false;
-    var $success = $('.success');
-    var $fail = $('.fail');
-    var $exerciseType = $('.exercise-type');
+    
 
     var start = function() {
         success = 0;
         fail = 0;
+        miss = 0;
         LIBRARY_CONFIG = $exerciseType.val();
         context.clearRect(0, 0, 800, 800);
         drawNumBall(numBall, context);
@@ -174,6 +181,11 @@ $(function() {
         //减少小球生命
         else {
             numBall.lifeTime -= INTERVAL_TIME
+            //如果是误按
+            if(hitKey != ''){
+                miss += 1;
+            }
+            //如果小球阳寿已尽。。。
             if(numBall.lifeTime <= 0){
                 // numBall.lifeTime = 0;
                 numBall.status = 0;
@@ -187,7 +199,7 @@ $(function() {
         }
 
 
-
+        //更新得分计数
         updateScore();
         //计数，判断输赢
         if (fail == 3) {
@@ -238,6 +250,7 @@ $(function() {
     var updateScore = function(){
         $success.text('success: ' + success);
         $fail.text('fail: ' + fail);
+        $miss.text('miss: ' + miss);
     }
 
 
@@ -249,13 +262,13 @@ $(function() {
 
     //暂停
     $('.pause').on('click', function(){
-        pause = !pause;
         if(pause){
             loop();
         }
         else {
             clearTimeout(loopId);
         }
+        pause = !pause;
     });
 
 
