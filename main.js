@@ -125,19 +125,34 @@ $(function() {
     var drawLabel = function(numBall, context) {
         context.save();
         context.font = '20pt Arial';
-        context.fillStyle = numBall.fontcolor;
+        context.fillStyle = genFontColor();
         context.fillText(numBall.label, numBall.position.x - 10, numBall.position.y + 10);
         context.restore();
         console.log(numBall.libraryIndex);
+
+        function genFontColor(){
+            if(numBall.label>= 'a' && numBall.label<= 'z'){
+                numBall.setColor('fontcolor',[204,51,255,1]);
+            }
+            return numBall.fontcolor;
+        }
 
     }
 
     var ALIVE = true;
     var loopId;
+    var success = 0;
+    var fail = 0;
+    var pause = false;
+    var $success = $('.success');
+    var $fail = $('.fail');
 
     var start = function(numBall, context) {
+        success = 0;
+        fail = 0;
         context.clearRect(0, 0, 800, 800);
         drawNumBall(numBall, context);
+        keyObj.getHitKey();
         loop();
     }
 
@@ -147,19 +162,63 @@ $(function() {
 
         var hitKey = getKey();
 
+        //如果对应得上
+        if(checkKey(hitKey)){
+            // numBall.lifeTime = 0;
+            numBall.status = 2;
+            success += 1;
+        }
+        //否则
         //减少小球生命
+        else {
+            numBall.lifeTime -= INTERVAL_TIME
+            if(numBall.lifeTime <= 0){
+                // numBall.lifeTime = 0;
+                numBall.status = 0;
+                fail += 1;
+            }
+        }
 
-        //检测小球生命
+        //检测小球状态
+        if (numBall.status != 1) {
+            numBall = new NumBall();
+        }
 
+
+
+        updateScore();
         //计数，判断输赢
+        if (fail == 3) {
+            clearTimeout(loopId);
+            alert('you lose!');
+            return;
+        }
+
+        if (success == 50) {
+            clearTimeout(loopId);
+            alert('you win!');
+            return;
+        }
+
+
+        context.clearRect(0, 0, 800, 800);
+        drawNumBall(numBall, context);
 
         loopId = setTimeout(function() {
             loop();
-        }, 50);
+        }, INTERVAL_TIME * 1000);
     }
 
     var getKey = function() {
-        return keyObj.key;
+        var key = keyObj.key;
+        
+        keyObj.key = '';
+        return key;
+    }
+
+    var checkKey = function(keyCode){
+        console.log(numBall.label.charCodeAt(),keyCode);
+        return numBall.label.charCodeAt() == keyCode;
     }
 
     var keyObj = {
@@ -168,12 +227,36 @@ $(function() {
             var me = this;
             $(document).on('keypress', function(e){
                 me.key = e.which;
+                console.log(e.which);
             });
         }
     }
 
 
-    start(numBall, context);
+    var updateScore = function(){
+        $success.text('success: ' + success);
+        $fail.text('fail: ' + fail);
+    }
+
+
+    //开始
+    $('.begin').on('click', function(){
+        clearTimeout(loopId);
+        start(numBall, context);
+    });
+
+    //暂停
+    $('.pause').on('click', function(){
+        if(pause){
+            loop();
+        }
+        else {
+            clearTimeout(loopId);
+        }
+    });
+
+
+    // start(numBall, context);
 
 
 });
